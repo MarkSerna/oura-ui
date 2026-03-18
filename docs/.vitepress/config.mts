@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Oura.js",
   description: "A premium, lightweight, glassmorphism notification library.",
+  base: '/ourajs/',
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
@@ -24,7 +25,7 @@ export default defineConfig({
       }
     ],
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/oura/oura-js' }
+      { icon: 'github', link: 'https://github.com/MarkSerna/ourajs' }
     ],
     footer: {
       message: 'Released under the MIT License.',
