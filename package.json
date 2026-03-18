@@ -1,0 +1,45 @@
+{
+  "name": "oura-js",
+  "version": "1.0.0",
+  "description": "A modern, glassmorphic notification library powered by ES6+ and TypeScript",
+  "main": "./dist/oura.umd.js",
+  "module": "./dist/oura.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/oura.js",
+      "require": "./dist/oura.umd.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs"
+  },
+  "keywords": [
+    "notification",
+    "sweetalert2",
+    "toast",
+    "modal",
+    "glassmorphism",
+    "ui",
+    "typescript"
+  ],
+  "author": "Oura Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "jsdom": "^29.0.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.7.0",
+    "vitepress": "^1.6.4",
+    "vitest": "^4.1.0",
+    "vue": "^3.5.30"
+  }
+}
