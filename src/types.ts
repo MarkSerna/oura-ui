@@ -2,7 +2,7 @@ export interface OuraOptions {
     title?: string;
     text?: string;
     html?: string | HTMLElement;
-    icon?: 'success' | 'error' | 'warning' | 'info' | 'progress';
+    icon?: 'success' | 'error' | 'warning' | 'info' | 'progress' | (string & {});
     confirmButtonText?: string;
     cancelButtonText?: string;
     showDenyButton?: boolean;
@@ -20,6 +20,14 @@ export interface OuraOptions {
     // Drawer/Layout specific
     side?: 'left' | 'right' | 'top' | 'bottom';
     width?: string;
+
+    // Toast actions
+    actions?: ToastAction[];
+}
+
+export interface ToastAction {
+    label: string;
+    onClick: () => void;
 }
 
 export interface OuraConfig {
@@ -41,4 +49,57 @@ export interface ButtonConfig {
     text: string;
     value: OuraResult;
     className?: string;
+}
+
+// ── New Component Types ──
+
+export interface TooltipOptions {
+    content: string;
+    placement?: 'top' | 'bottom' | 'left' | 'right';
+    delay?: number;
+}
+
+export interface PopoverOptions {
+    title?: string;
+    html: string;
+    placement?: 'top' | 'bottom' | 'left' | 'right';
+    closeOnClickOutside?: boolean;
+}
+
+export interface DropdownItem {
+    label: string;
+    icon?: string;
+    shortcut?: string;
+    separator?: boolean;
+    disabled?: boolean;
+    danger?: boolean;
+    onClick?: () => void;
+}
+
+export interface DropdownOptions {
+    items: DropdownItem[];
+    placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
+}
+
+export interface AlertOptions {
+    title?: string;
+    description: string;
+    variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
+    dismissible?: boolean;
+    container?: string | HTMLElement;
+}
+
+export interface SkeletonOptions {
+    width?: string;
+    height?: string;
+    variant?: 'text' | 'circular' | 'rectangular';
+    count?: number;
+    container?: string | HTMLElement;
+}
+
+export interface HoverCardOptions {
+    html: string;
+    placement?: 'top' | 'bottom';
+    openDelay?: number;
+    closeDelay?: number;
 }

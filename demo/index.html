@@ -315,13 +315,29 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
-                    <span>Async SWAL</span>
+                    <span>Async Validate</span>
                 </button>
                 <button class="btn" id="trigger-stack">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                     </svg>
                     <span>3D Stack</span>
+                </button>
+            </div>
+
+            <div class="section-title">New Components</div>
+            <div class="grid-controls">
+                <button class="btn" id="trigger-dropdown">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    <span>Dropdown</span>
+                </button>
+                <button class="btn" id="trigger-alert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>Alert</span>
+                </button>
+                <button class="btn" id="trigger-skeleton">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+                    <span>Skeleton</span>
                 </button>
             </div>
 
@@ -352,9 +368,20 @@
 
             <div style="display: flex; gap: 20px;">
                 <div class="glass-card" style="flex: 1;">
+                    <h3 style="margin-top:0">Inline Alerts</h3>
+                    <div id="alerts-area" style="display:flex;flex-direction:column;gap:10px;"></div>
+                </div>
+                <div class="glass-card" style="flex: 1;">
+                    <h3 style="margin-top:0">Skeleton Loader</h3>
+                    <div id="skeleton-area" style="min-height:60px;"></div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px;">
+                <div class="glass-card" style="flex: 1;">
                     <h3 style="margin-top:0">v1.3.0 Engine</h3>
                     <p style="font-size: 0.9rem; color: #64748b;">
-                        - <strong>Sheets</strong>: Floating side panels with glass physics.<br>
+                        - <strong>7 New Components</strong>: Tooltip, Popover, Dropdown, Context Menu, Alert, Skeleton, Hover Card.<br>
                         - <strong>Universal Positioning</strong>: 6-way anchor system.<br>
                         - <strong>Auto-Theme</strong>: Native OS light/dark detection.
                     </p>
@@ -455,6 +482,35 @@
         document.getElementById('theme-light').onclick = () => Oura.configure({ theme: 'light-glass' });
         document.getElementById('theme-dark').onclick = () => Oura.configure({ theme: 'dark-glass' });
         document.getElementById('theme-system').onclick = () => Oura.configure({ theme: 'system' });
+
+        // 5. Dropdown
+        document.getElementById('trigger-dropdown').onclick = (e) => {
+            Oura.dropdown(e.currentTarget, {
+                placement: 'bottom-start',
+                items: [
+                    { label: 'Edit Profile', icon: '✏️', shortcut: '⌘E', onClick: () => Oura.info('Edit clicked') },
+                    { label: 'Settings', icon: '⚙️', onClick: () => Oura.info('Settings opened') },
+                    { separator: true },
+                    { label: 'Logout', icon: '🚪', danger: true, onClick: () => Oura.warning('Logged out') }
+                ]
+            });
+        };
+
+        // 6. Inline Alert
+        document.getElementById('trigger-alert').onclick = () => {
+            const variants = ['success', 'warning', 'error', 'info'];
+            const v = variants[Math.floor(Math.random() * variants.length)];
+            const msgs = { success: 'Changes saved!', warning: 'Disk almost full.', error: 'Connection lost.', info: 'New update available.' };
+            Oura.alert({ title: v.charAt(0).toUpperCase() + v.slice(1), description: msgs[v], variant: v, container: '#alerts-area' });
+        };
+
+        // 7. Skeleton
+        document.getElementById('trigger-skeleton').onclick = () => {
+            const area = document.getElementById('skeleton-area');
+            area.innerHTML = '';
+            const el = Oura.skeleton({ variant: 'text', count: 3, width: '100%', container: '#skeleton-area' });
+            setTimeout(() => { el.remove(); area.innerHTML = '<p style="font-size:0.85rem;color:#64748b;">Content loaded ✓</p>'; }, 2500);
+        };
 
         // Internationalization trigger toggle
         const langTrigger = document.getElementById('lang-trigger');

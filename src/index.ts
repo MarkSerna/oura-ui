@@ -1,4 +1,4 @@
-import { OuraOptions, OuraConfig, OuraResult, ButtonConfig } from './types';
+import { OuraOptions, OuraConfig, OuraResult, ButtonConfig, TooltipOptions, PopoverOptions, DropdownOptions, DropdownItem, AlertOptions, SkeletonOptions, HoverCardOptions } from './types';
 import { ICONS, MAIN_ICONS } from './icons';
 import { injectStyles } from './styles';
 
@@ -165,6 +165,12 @@ class OuraNotification {
                 iconEl.className = 'oura-icon';
                 iconEl.innerHTML = `<div class="oura-main-icon-glass">${ICONS[options.icon]}</div>`;
                 contentContainer.appendChild(iconEl);
+            } else if (options.icon) {
+                // Custom SVG/HTML icon support
+                const iconEl = document.createElement('div');
+                iconEl.className = 'oura-icon';
+                iconEl.innerHTML = `<div class="oura-main-icon-glass">${options.icon}</div>`;
+                contentContainer.appendChild(iconEl);
             }
 
             if (options.title) {
@@ -276,6 +282,8 @@ class OuraNotification {
 
                 overlay.classList.remove('oura-show');
                 modal.classList.remove('oura-show');
+                modal.classList.add('oura-closing');
+                overlay.classList.add('oura-closing');
                 
                 setTimeout(() => {
                     overlay.remove();
@@ -435,7 +443,21 @@ class OuraNotification {
             toast.className = 'oura-toast oura-init';
             toast.setAttribute('role', 'status');
 
-            let iconHtml = config.icon && ICONS[config.icon] ? ICONS[config.icon] : '';
+            let iconHtml = '';
+            if (config.icon && ICONS[config.icon]) {
+                iconHtml = ICONS[config.icon];
+            } else if (config.icon) {
+                // Custom SVG/HTML icon
+                iconHtml = config.icon;
+            }
+            
+            let actionsHtml = '';
+            if (config.actions && config.actions.length > 0) {
+                actionsHtml = `<div class="oura-toast-actions">${config.actions.map((a, i) => 
+                    `<button class="oura-toast-action" data-action-idx="${i}">${a.label}</button>`
+                ).join('')}</div>`;
+            }
+            
             toast.innerHTML = `
                 <div class="oura-toast-body">
                     ${iconHtml ? `<div class="oura-toast-icon">${iconHtml}</div>` : ''}
@@ -444,7 +466,20 @@ class OuraNotification {
                         ${config.text ? `<div class="oura-toast-text">${config.text}</div>` : ''}
                     </div>
                 </div>
+                ${actionsHtml}
             `;
+            
+            // Bind action handlers
+            if (config.actions) {
+                toast.querySelectorAll('.oura-toast-action').forEach((btn) => {
+                    const idx = parseInt(btn.getAttribute('data-action-idx') || '0');
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        config.actions![idx].onClick();
+                        close();
+                    });
+                });
+            }
 
             if (config.type === 'progress') {
                 const progCont = document.createElement('div');
@@ -549,6 +584,334 @@ class OuraNotification {
     public info(title: string, text?: string) { return this.toast({ title, text, icon: 'info' }); }
     public warning(title: string, text?: string) { return this.toast({ title, text, icon: 'warning' }); }
     public error(title: string, text?: string) { return this.toast({ title, text, icon: 'error' }); }
+
+    // ── Tooltip ──
+    public tooltip(target: string | HTMLElement, options: TooltipOptions): () => void {
+        if (typeof document === 'undefined') return () => {};
+        const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
+        if (!el) return () => {};
+
+        const tip = document.createElement('div');
+        tip.className = 'oura-tooltip';
+        tip.textContent = options.content;
+        document.body.appendChild(tip);
+
+        const placement = options.placement || 'top';
+        const delay = options.delay ?? 200;
+        let timeout: ReturnType<typeof setTimeout>;
+
+        const show = () => {
+            timeout = setTimeout(() => {
+                const rect = el.getBoundingClientRect();
+                const tRect = tip.getBoundingClientRect();
+                let top = 0, left = 0;
+                if (placement === 'top') { top = rect.top - tRect.height - 8; left = rect.left + rect.width / 2 - tRect.width / 2; }
+                else if (placement === 'bottom') { top = rect.bottom + 8; left = rect.left + rect.width / 2 - tRect.width / 2; }
+                else if (placement === 'left') { top = rect.top + rect.height / 2 - tRect.height / 2; left = rect.left - tRect.width - 8; }
+                else { top = rect.top + rect.height / 2 - tRect.height / 2; left = rect.right + 8; }
+                tip.style.top = `${top}px`;
+                tip.style.left = `${left}px`;
+                tip.classList.add('oura-show');
+            }, delay);
+        };
+        const hide = () => { clearTimeout(timeout); tip.classList.remove('oura-show'); };
+
+        el.addEventListener('mouseenter', show);
+        el.addEventListener('mouseleave', hide);
+        el.addEventListener('focus', show);
+        el.addEventListener('blur', hide);
+
+        return () => { el.removeEventListener('mouseenter', show); el.removeEventListener('mouseleave', hide); el.removeEventListener('focus', show); el.removeEventListener('blur', hide); tip.remove(); };
+    }
+
+    // ── Popover ──
+    public popover(target: string | HTMLElement, options: PopoverOptions): () => void {
+        if (typeof document === 'undefined') return () => {};
+        const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
+        if (!el) return () => {};
+
+        const pop = document.createElement('div');
+        pop.className = 'oura-popover';
+        pop.style.position = 'fixed';
+        let html = '';
+        if (options.title) html += `<div class="oura-popover-header">${options.title}</div>`;
+        html += `<div class="oura-popover-body">${options.html}</div>`;
+        html += `<button class="oura-popover-close" aria-label="Close">&times;</button>`;
+        pop.innerHTML = html;
+        document.body.appendChild(pop);
+
+        let open = false;
+        const placement = options.placement || 'bottom';
+
+        const position = () => {
+            const rect = el.getBoundingClientRect();
+            const pRect = pop.getBoundingClientRect();
+            let top = 0, left = 0;
+            if (placement === 'bottom') { top = rect.bottom + 8; left = rect.left + rect.width / 2 - pRect.width / 2; }
+            else if (placement === 'top') { top = rect.top - pRect.height - 8; left = rect.left + rect.width / 2 - pRect.width / 2; }
+            else if (placement === 'left') { top = rect.top + rect.height / 2 - pRect.height / 2; left = rect.left - pRect.width - 8; }
+            else { top = rect.top + rect.height / 2 - pRect.height / 2; left = rect.right + 8; }
+            pop.style.top = `${Math.max(8, top)}px`;
+            pop.style.left = `${Math.max(8, left)}px`;
+        };
+
+        const toggle = (e: Event) => {
+            e.stopPropagation();
+            open = !open;
+            if (open) { position(); requestAnimationFrame(() => pop.classList.add('oura-show')); }
+            else { pop.classList.remove('oura-show'); }
+        };
+
+        const outsideClick = (e: Event) => {
+            if (open && options.closeOnClickOutside !== false && !pop.contains(e.target as Node) && !el.contains(e.target as Node)) {
+                open = false; pop.classList.remove('oura-show');
+            }
+        };
+
+        el.addEventListener('click', toggle);
+        document.addEventListener('click', outsideClick);
+        pop.querySelector('.oura-popover-close')?.addEventListener('click', () => { open = false; pop.classList.remove('oura-show'); });
+
+        return () => { el.removeEventListener('click', toggle); document.removeEventListener('click', outsideClick); pop.remove(); };
+    }
+
+    // ── Dropdown Menu ──
+    public dropdown(target: string | HTMLElement, options: DropdownOptions): () => void {
+        if (typeof document === 'undefined') return () => {};
+        const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
+        if (!el) return () => {};
+
+        const menu = document.createElement('div');
+        menu.className = 'oura-dropdown';
+        menu.setAttribute('role', 'menu');
+
+        options.items.forEach(item => {
+            if (item.separator) {
+                const sep = document.createElement('div');
+                sep.className = 'oura-dropdown-separator';
+                menu.appendChild(sep);
+                return;
+            }
+            const btn = document.createElement('button');
+            btn.className = 'oura-dropdown-item';
+            btn.setAttribute('role', 'menuitem');
+            if (item.danger) btn.classList.add('oura-danger');
+            if (item.disabled) btn.classList.add('oura-disabled');
+
+            let inner = '';
+            if (item.icon) inner += `<span class="oura-dropdown-item-icon">${item.icon}</span>`;
+            inner += `<span>${item.label}</span>`;
+            if (item.shortcut) inner += `<span class="oura-dropdown-shortcut">${item.shortcut}</span>`;
+            btn.innerHTML = inner;
+
+            btn.addEventListener('click', () => {
+                menu.classList.remove('oura-show');
+                if (item.onClick) item.onClick();
+            });
+            menu.appendChild(btn);
+        });
+
+        document.body.appendChild(menu);
+        let open = false;
+        const placement = options.placement || 'bottom-start';
+
+        const toggle = (e: Event) => {
+            e.stopPropagation();
+            open = !open;
+            if (open) {
+                const rect = el.getBoundingClientRect();
+                if (placement === 'bottom-start') { menu.style.top = `${rect.bottom + 4}px`; menu.style.left = `${rect.left}px`; }
+                else if (placement === 'bottom-end') { menu.style.top = `${rect.bottom + 4}px`; menu.style.right = `${window.innerWidth - rect.right}px`; }
+                else if (placement === 'top-start') { menu.style.bottom = `${window.innerHeight - rect.top + 4}px`; menu.style.left = `${rect.left}px`; }
+                else { menu.style.bottom = `${window.innerHeight - rect.top + 4}px`; menu.style.right = `${window.innerWidth - rect.right}px`; }
+                requestAnimationFrame(() => menu.classList.add('oura-show'));
+            } else {
+                menu.classList.remove('oura-show');
+            }
+        };
+
+        const outsideClick = () => { if (open) { open = false; menu.classList.remove('oura-show'); } };
+        
+        const handleKeyboard = (e: KeyboardEvent) => {
+            if (!open) return;
+            const items = Array.from(menu.querySelectorAll<HTMLElement>('.oura-dropdown-item:not(.oura-disabled)'));
+            if (!items.length) return;
+            const current = items.indexOf(document.activeElement as HTMLElement);
+            if (e.key === 'ArrowDown') { e.preventDefault(); items[(current + 1) % items.length].focus(); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); items[(current - 1 + items.length) % items.length].focus(); }
+            else if (e.key === 'Enter' && current >= 0) { e.preventDefault(); (items[current] as HTMLButtonElement).click(); }
+            else if (e.key === 'Escape') { open = false; menu.classList.remove('oura-show'); el.focus(); }
+        };
+        
+        el.addEventListener('click', toggle);
+        document.addEventListener('click', outsideClick);
+        document.addEventListener('keydown', handleKeyboard);
+
+        return () => { el.removeEventListener('click', toggle); document.removeEventListener('click', outsideClick); document.removeEventListener('keydown', handleKeyboard); menu.remove(); };
+    }
+
+    // ── Context Menu ──
+    public contextMenu(target: string | HTMLElement, items: DropdownItem[]): () => void {
+        if (typeof document === 'undefined') return () => {};
+        const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
+        if (!el) return () => {};
+
+        const menu = document.createElement('div');
+        menu.className = 'oura-context-menu';
+        menu.setAttribute('role', 'menu');
+
+        items.forEach(item => {
+            if (item.separator) {
+                const sep = document.createElement('div');
+                sep.className = 'oura-dropdown-separator';
+                menu.appendChild(sep);
+                return;
+            }
+            const btn = document.createElement('button');
+            btn.className = 'oura-dropdown-item';
+            btn.setAttribute('role', 'menuitem');
+            if (item.danger) btn.classList.add('oura-danger');
+            if (item.disabled) btn.classList.add('oura-disabled');
+
+            let inner = '';
+            if (item.icon) inner += `<span class="oura-dropdown-item-icon">${item.icon}</span>`;
+            inner += `<span>${item.label}</span>`;
+            if (item.shortcut) inner += `<span class="oura-dropdown-shortcut">${item.shortcut}</span>`;
+            btn.innerHTML = inner;
+
+            btn.addEventListener('click', () => {
+                menu.classList.remove('oura-show');
+                if (item.onClick) item.onClick();
+            });
+            menu.appendChild(btn);
+        });
+        document.body.appendChild(menu);
+
+        const onContext = (e: MouseEvent) => {
+            e.preventDefault();
+            menu.style.top = `${e.clientY}px`;
+            menu.style.left = `${e.clientX}px`;
+            requestAnimationFrame(() => {
+                menu.classList.add('oura-show');
+                const firstItem = menu.querySelector<HTMLElement>('.oura-dropdown-item:not(.oura-disabled)');
+                if (firstItem) firstItem.focus();
+            });
+        };
+
+        const close = () => menu.classList.remove('oura-show');
+        
+        const handleKeyboard = (e: KeyboardEvent) => {
+            if (!menu.classList.contains('oura-show')) return;
+            const items = Array.from(menu.querySelectorAll<HTMLElement>('.oura-dropdown-item:not(.oura-disabled)'));
+            if (!items.length) return;
+            const current = items.indexOf(document.activeElement as HTMLElement);
+            if (e.key === 'ArrowDown') { e.preventDefault(); items[(current + 1) % items.length].focus(); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); items[(current - 1 + items.length) % items.length].focus(); }
+            else if (e.key === 'Enter' && current >= 0) { e.preventDefault(); (items[current] as HTMLButtonElement).click(); }
+            else if (e.key === 'Escape') { close(); }
+        };
+        
+        el.addEventListener('contextmenu', onContext);
+        document.addEventListener('click', close);
+        document.addEventListener('keydown', handleKeyboard);
+        document.addEventListener('contextmenu', (e) => { if (!el.contains(e.target as Node)) close(); });
+
+        return () => { el.removeEventListener('contextmenu', onContext); document.removeEventListener('click', close); document.removeEventListener('keydown', handleKeyboard); menu.remove(); };
+    }
+
+    // ── Inline Alert ──
+    public alert(options: AlertOptions): HTMLElement {
+        const alert = document.createElement('div');
+        alert.className = 'oura-alert';
+        const variant = options.variant || 'default';
+        if (variant !== 'default') alert.classList.add(`oura-alert-${variant}`);
+        alert.setAttribute('role', 'alert');
+
+        const iconMap: Record<string, string> = {
+            success: ICONS.success,
+            error: ICONS.error,
+            warning: ICONS.warning,
+            info: ICONS.info,
+        };
+
+        let inner = '';
+        if (iconMap[variant]) inner += `<div class="oura-alert-icon">${iconMap[variant]}</div>`;
+        inner += `<div class="oura-alert-content">`;
+        if (options.title) inner += `<div class="oura-alert-title">${options.title}</div>`;
+        inner += `<div class="oura-alert-desc">${options.description}</div></div>`;
+        if (options.dismissible !== false) inner += `<button class="oura-alert-dismiss" aria-label="Dismiss">&times;</button>`;
+        alert.innerHTML = inner;
+
+        alert.querySelector('.oura-alert-dismiss')?.addEventListener('click', () => {
+            alert.style.opacity = '0'; alert.style.transform = 'translateY(-8px)';
+            setTimeout(() => alert.remove(), 300);
+        });
+
+        const container = typeof options.container === 'string' ? document.querySelector(options.container) : options.container;
+        (container || document.body).appendChild(alert);
+        return alert;
+    }
+
+    // ── Skeleton ──
+    public skeleton(options: SkeletonOptions = {}): HTMLElement {
+        const count = options.count || 1;
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.flexDirection = 'column';
+        wrapper.style.gap = '12px';
+
+        for (let i = 0; i < count; i++) {
+            const el = document.createElement('div');
+            el.className = 'oura-skeleton';
+            if (options.variant === 'circular') el.classList.add('oura-skeleton-circular');
+            else if (options.variant === 'text') el.classList.add('oura-skeleton-text');
+            el.style.width = options.width || (options.variant === 'circular' ? '48px' : '100%');
+            el.style.height = options.height || (options.variant === 'circular' ? '48px' : options.variant === 'text' ? '16px' : '80px');
+            wrapper.appendChild(el);
+        }
+
+        const container = typeof options.container === 'string' ? document.querySelector(options.container) : options.container;
+        (container || document.body).appendChild(wrapper);
+        return wrapper;
+    }
+
+    // ── Hover Card ──
+    public hoverCard(target: string | HTMLElement, options: HoverCardOptions): () => void {
+        if (typeof document === 'undefined') return () => {};
+        const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
+        if (!el) return () => {};
+
+        const card = document.createElement('div');
+        card.className = 'oura-hover-card';
+        card.innerHTML = options.html;
+        document.body.appendChild(card);
+
+        const openDelay = options.openDelay ?? 300;
+        const closeDelay = options.closeDelay ?? 200;
+        const placement = options.placement || 'bottom';
+        let openTimer: ReturnType<typeof setTimeout>;
+        let closeTimer: ReturnType<typeof setTimeout>;
+
+        const position = () => {
+            const rect = el.getBoundingClientRect();
+            const cRect = card.getBoundingClientRect();
+            let top = 0, left = rect.left + rect.width / 2 - cRect.width / 2;
+            if (placement === 'bottom') top = rect.bottom + 10;
+            else top = rect.top - cRect.height - 10;
+            card.style.top = `${Math.max(8, top)}px`;
+            card.style.left = `${Math.max(8, left)}px`;
+        };
+
+        const show = () => { clearTimeout(closeTimer); openTimer = setTimeout(() => { position(); card.classList.add('oura-show'); }, openDelay); };
+        const hide = () => { clearTimeout(openTimer); closeTimer = setTimeout(() => { card.classList.remove('oura-show'); }, closeDelay); };
+
+        el.addEventListener('mouseenter', show);
+        el.addEventListener('mouseleave', hide);
+        card.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+        card.addEventListener('mouseleave', hide);
+
+        return () => { el.removeEventListener('mouseenter', show); el.removeEventListener('mouseleave', hide); card.remove(); };
+    }
 }
 
 const Oura = new OuraNotification();

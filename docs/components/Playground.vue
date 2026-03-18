@@ -82,6 +82,36 @@ function triggerStack() {
   })
 }
 
+function triggerDropdown(e) {
+  if (!Oura.value) return;
+  const btn = e.currentTarget;
+  Oura.value.dropdown(btn, {
+    placement: 'bottom-start',
+    items: [
+      { label: 'Edit Profile', icon: '✏️', shortcut: '⌘E', onClick: () => Oura.value.info('Edit clicked') },
+      { label: 'Settings', icon: '⚙️', onClick: () => Oura.value.info('Settings') },
+      { separator: true },
+      { label: 'Logout', icon: '🚪', danger: true, onClick: () => Oura.value.warning('Logged out') }
+    ]
+  });
+}
+
+function triggerAlert() {
+  if (!Oura.value) return;
+  const variants = ['success', 'warning', 'error', 'info'];
+  const v = variants[Math.floor(Math.random() * variants.length)];
+  const msgs = { success: 'Changes saved!', warning: 'Disk almost full.', error: 'Connection lost.', info: 'New update available.' };
+  Oura.value.alert({ title: v.charAt(0).toUpperCase() + v.slice(1), description: msgs[v], variant: v, container: '.pg-alerts-area' });
+}
+
+function triggerSkeleton() {
+  if (!Oura.value) return;
+  const area = document.querySelector('.pg-skeleton-area');
+  if (area) area.innerHTML = '';
+  const el = Oura.value.skeleton({ variant: 'text', count: 3, width: '100%', container: '.pg-skeleton-area' });
+  setTimeout(() => { el.remove(); if (area) area.innerHTML = '<p style="color:var(--oura-text-muted);font-size:0.85rem;">Content loaded ✓</p>'; }, 2500);
+}
+
 const positions = [
   { key: 'top-left', label: 'TL' },
   { key: 'top-center', label: 'TC' },
@@ -136,6 +166,22 @@ const positions = [
           </button>
         </div>
 
+        <div class="pg-section-title">New Components</div>
+        <div class="pg-grid-controls">
+          <button class="pg-btn" @click="triggerDropdown($event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <span>Dropdown</span>
+          </button>
+          <button class="pg-btn" @click="triggerAlert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>Alert</span>
+          </button>
+          <button class="pg-btn" @click="triggerSkeleton">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+            <span>Skeleton</span>
+          </button>
+        </div>
+
         <div class="pg-section-title">Theme Control</div>
         <div class="pg-grid-controls">
           <button class="pg-btn" @click="setTheme('light-glass')">Light</button>
@@ -153,17 +199,31 @@ const positions = [
   theme: 'system'
 });
 
-Oura.drawer({
-  title: 'Settings',
-  side: 'right',
-  html: '&lt;p&gt;Configure your app data...&lt;/p&gt;'
+Oura.dropdown('#menu', {
+  items: [
+    { label: 'Edit', icon: '✏️' },
+    { label: 'Delete', danger: true }
+  ]
 });</pre>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="pg-glass-card">
+            <h3 style="margin-top:0">Inline Alerts</h3>
+            <div class="pg-alerts-area" style="display:flex;flex-direction:column;gap:10px;"></div>
+            <p v-if="!alertsShown" class="pg-engine-desc" style="margin:0">Click "Alert" in the sidebar to see inline alerts here.</p>
+          </div>
+          <div class="pg-glass-card">
+            <h3 style="margin-top:0">Skeleton Loader</h3>
+            <div class="pg-skeleton-area" style="min-height:60px;"></div>
+            <p class="pg-engine-desc" style="margin:0">Click "Skeleton" to preview loading states.</p>
+          </div>
         </div>
 
         <div class="pg-glass-card">
           <h3 style="margin-top:0">v1.3.0 Engine</h3>
           <p class="pg-engine-desc">
-            - <strong>Sheets</strong>: Floating side panels with glass physics.<br>
+            - <strong>7 New Components</strong>: Tooltip, Popover, Dropdown, Context Menu, Alert, Skeleton, Hover Card.<br>
             - <strong>Universal Positioning</strong>: 6-way anchor system.<br>
             - <strong>Auto-Theme</strong>: Native OS light/dark detection.
           </p>

@@ -131,4 +131,105 @@ describe('OuraNotification UI Tests', () => {
         Oura.configure({ theme: 'light-glass' });
         expect(document.documentElement.classList.contains('oura-dark-glass')).toBe(false);
     });
+
+    it('should add closing classes during modal exit animation', async () => {
+        const promise = Oura.fire({ title: 'Exit' });
+        const modal = document.querySelector('.oura-modal');
+        const overlay = document.querySelector('.oura-overlay');
+        
+        const btn = modal?.querySelector('.oura-btn') as HTMLButtonElement;
+        btn.click();
+        
+        expect(modal?.classList.contains('oura-closing')).toBe(true);
+        expect(overlay?.classList.contains('oura-closing')).toBe(true);
+        
+        await promise;
+    });
+
+    it('should render and handle toast actions', async () => {
+        let actionClicked = false;
+        Oura.toast({
+            title: 'Action Toast',
+            actions: [
+                { label: 'Undo', onClick: () => { actionClicked = true; } }
+            ]
+        });
+        
+        const actionBtn = document.querySelector('.oura-toast-action') as HTMLButtonElement;
+        expect(actionBtn).toBeTruthy();
+        expect(actionBtn.textContent).toBe('Undo');
+        
+        actionBtn.click();
+        expect(actionClicked).toBe(true);
+    });
+
+    it('should support custom SVG icons in modals and toasts', () => {
+        const customSvg = '<svg id="custom-icon"></svg>';
+        
+        // Modal
+        Oura.fire({ icon: customSvg });
+        expect(document.querySelector('#custom-icon')).toBeTruthy();
+        document.querySelector('.oura-overlay')?.remove();
+
+        // Toast
+        Oura.toast({ icon: customSvg });
+        expect(document.querySelector('#custom-icon')).toBeTruthy();
+    });
+
+    it('should handle keyboard navigation in dropdown menus', async () => {
+        const btn = document.createElement('button');
+        btn.id = 'trigger';
+        document.body.appendChild(btn);
+
+        let clicked = false;
+        Oura.dropdown('#trigger', {
+            items: [
+                { label: 'Item 1', onClick: () => {} },
+                { label: 'Item 2', onClick: () => { clicked = true; } }
+            ]
+        });
+
+        btn.click(); // Open
+        await new Promise(r => setTimeout(r, 50));
+        const menu = document.querySelector('.oura-dropdown');
+        expect(menu?.classList.contains('oura-show')).toBe(true);
+
+        const items = menu?.querySelectorAll('.oura-dropdown-item');
+        
+        // Mock focus for JSDOM
+        (items?.[0] as HTMLElement).focus();
+        
+        // ArrowDown to Item 2
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
+        expect(document.activeElement).toBe(items?.[1]);
+
+        // Enter to click Item 2
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        expect(clicked).toBe(true);
+        expect(menu?.classList.contains('oura-show')).toBe(false);
+    });
+
+    it('should render new components: Tooltip, Popover, Alert, Skeleton', () => {
+        const btn = document.createElement('button');
+        btn.id = 'cmp-trigger';
+        document.body.appendChild(btn);
+
+        // Tooltip (adds listeners)
+        Oura.tooltip('#cmp-trigger', { content: 'Tip' });
+        
+        // Popover
+        Oura.popover('#cmp-trigger', { title: 'Pop', html: 'content' });
+        btn.click();
+        expect(document.querySelector('.oura-popover')).toBeTruthy();
+
+        // Alert
+        Oura.alert({ title: 'Alert Title', description: 'Alert description', variant: 'error' });
+        const alert = document.querySelector('.oura-alert');
+        expect(alert).toBeTruthy();
+        expect(alert?.classList.contains('oura-alert-error')).toBe(true);
+
+        // Skeleton
+        Oura.skeleton({ variant: 'text', count: 2 });
+        expect(document.querySelectorAll('.oura-skeleton').length).toBe(2);
+    });
 });

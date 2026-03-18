@@ -1,116 +1,183 @@
-# Oura JS 🌙
+# Oura.js
 
-[![GitHub](https://img.shields.io/badge/GitHub-MarkSerna%2Fourajs-blue?style=for-the-badge&logo=github)](https://github.com/MarkSerna/ourajs)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/oura-js)](https://www.npmjs.com/package/oura-js)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/oura-js)](https://bundlephobia.com/package/oura-js)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178c6)](https://www.typescriptlang.org/)
 
-**Oura JS** is a modern, glassmorphic notification library powered by ES6+ and TypeScript. Designed to be lightweight, customizable, and visually stunning, it brings a sleek, premium feel to your web applications' notifications, modals, and drawers.
+> 🪟 The industry's most versatile glassmorphism notification & component library.
+
+**Zero dependencies. 10 kB gzipped. Dark mode. i18n. Fully typed.**
 
 ---
 
 ## ✨ Features
 
-- 🧊 **Glassmorphism**: Beautiful, translucent UI components out of the box.
-- 📱 **Responsive**: Fully responsive design that works seamlessly on any device.
-- 🔔 **Multiple Layouts**: Support for Toasts, Modals, Prompt, Confirm, and Side Drawers.
-- 🌗 **Theme Sync**: Automatic system theme detection (Light/Dark glass modes).
-- 🧩 **TypeScript**: Full type safety and intelligent IDE support.
-- 🌍 **I18n**: Built-in support for multiple languages and easy custom localization.
-- ⚡ **Lightweight**: Zero dependencies, optimized for performance.
+| Component | Description |
+|---|---|
+| **Modals** | Glassmorphic dialog boxes with confirm/cancel/deny |
+| **Toasts** | Stackable notifications with 3D depth effect |
+| **Drawers** | Side panels (Sheet) from any edge |
+| **Tooltips** | Contextual hints on hover/focus |
+| **Popovers** | Floating panels anchored to elements |
+| **Dropdowns** | Menus with icons, shortcuts & keyboard nav |
+| **Context Menus** | Custom right-click menus |
+| **Inline Alerts** | Static banners (success/warning/error/info) |
+| **Skeletons** | Animated loading placeholders |
+| **Hover Cards** | Preview cards on hover |
+
+**Plus:** Toast actions, custom SVG icons, exit animations, 6-way positioning, system theme sync, and i18n (10 languages).
 
 ---
 
-## 🚀 Installation
-
-Install via npm:
+## 📦 Install
 
 ```bash
 npm install oura-js
 ```
 
-Or via yarn:
+### CDN
 
-```bash
-yarn add oura-js
+```html
+<script src="https://unpkg.com/oura-js/dist/oura.umd.cjs"></script>
 ```
 
 ---
 
-## 🛠️ Quick Start
+## 🚀 Quick Start
 
-Import Oura and start firing notifications!
-
-```javascript
+```js
 import Oura from 'oura-js';
 
-// Basic success notification
-Oura.success('Success!', 'Your profile has been updated.');
+// Configure
+Oura.configure({
+  theme: 'system',      // light-glass | dark-glass | system
+  position: 'top-right', // 6 positions
+  locale: 'en'
+});
 
-// Custom Modal
-Oura.fire({
-  title: 'Welcome!',
-  text: 'Explore the modern world of Oura JS.',
-  icon: 'info',
-  confirmButtonText: 'Let\'s go!'
+// Toast
+Oura.success('Saved!', 'Your changes are live.');
+
+// Toast with actions
+Oura.toast({
+  title: 'File deleted',
+  icon: 'warning',
+  actions: [
+    { label: 'Undo', onClick: () => console.log('Undo!') }
+  ]
 });
 
 // Confirm dialog
-const result = await Oura.confirm({
-  title: 'Delete post?',
-  text: 'This action cannot be undone.',
-  icon: 'warning'
+const result = await Oura.confirm('Delete?', 'This is permanent.');
+if (result.isConfirmed) { /* ... */ }
+
+// Drawer
+Oura.drawer({
+  title: 'Settings',
+  side: 'right',
+  html: '<p>Your content here</p>'
 });
 
-if (result.isConfirmed) {
-  // Proceed with deletion...
-}
+// Tooltip
+Oura.tooltip('#my-btn', {
+  content: 'Save your work',
+  placement: 'top'
+});
+
+// Dropdown Menu
+Oura.dropdown('#menu-btn', {
+  items: [
+    { label: 'Edit', icon: '✏️', shortcut: '⌘E', onClick: () => {} },
+    { separator: true },
+    { label: 'Delete', danger: true, onClick: () => {} }
+  ]
+});
+
+// Inline Alert
+Oura.alert({
+  title: 'Heads up',
+  description: 'New version available.',
+  variant: 'info'
+});
+```
+
+---
+
+## 🎨 Theming
+
+```js
+// Light / Dark
+Oura.configure({ theme: 'light-glass' });
+Oura.configure({ theme: 'dark-glass' });
+
+// Auto-detect OS preference
+Oura.configure({ theme: 'system' });
+
+// Custom accent color
+Oura.configure({ accent: '#8b5cf6' });
+```
+
+### CSS Custom Properties
+
+| Variable | Default | Description |
+|---|---|---|
+| `--oura-bg` | `rgba(255,255,255,0.45)` | Background |
+| `--oura-text` | `#1a1a1a` | Text color |
+| `--oura-border` | `rgba(255,255,255,0.6)` | Border |
+| `--oura-accent` | `#007bff` | Accent color |
+| `--oura-radius` | `16px` | Border radius |
+| `--oura-font` | `system-ui` | Font family |
+
+---
+
+## 🌐 i18n
+
+Built-in support for 10 languages: `en`, `es`, `fr`, `de`, `it`, `pt`, `zh`, `ja`, `ru`, `ar`.
+
+```js
+Oura.configure({ locale: 'es' });
+// Buttons will show "Confirmar", "Cancelar", etc.
 ```
 
 ---
 
 ## 📖 API Reference
 
-### Configuration
-
-Customize the global behavior of Oura JS:
-
-```javascript
-Oura.configure({
-  theme: 'system', // 'light-glass', 'dark-glass', or 'system'
-  accent: '#7c3aed', // Primary accent color
-  position: 'top-right', // 'top-left', 'top-center', 'bottom-right', etc.
-  locale: 'en' // Default language
-});
-```
-
-### Methods
+### Notifications
 
 | Method | Description |
-| :--- | :--- |
-| `Oura.fire(options)` | Opens a standard modal. |
-| `Oura.confirm(options)` | Opens a confirmation dialog with Cancel/Confirm buttons. |
-| `Oura.prompt(options)` | Opens a modal with an input field. |
-| `Oura.toast(options)` | Fires a stackable toast notification. |
-| `Oura.drawer(options)` | Opens a side drawer (sheet). |
-| `Oura.promise(promise, msgs)` | Handles a promise with loading, success, and error states. |
-| `Oura.success/info/warning/error(title, text)` | Shorthand methods for toast notifications. |
+|---|---|
+| `Oura.toast(options)` | Toast notification |
+| `Oura.success(title, text?)` | Success toast shorthand |
+| `Oura.error(title, text?)` | Error toast shorthand |
+| `Oura.warning(title, text?)` | Warning toast shorthand |
+| `Oura.info(title, text?)` | Info toast shorthand |
+| `Oura.promise(promise, msgs)` | Promise-tracking toast |
+
+### Dialogs
+
+| Method | Description |
+|---|---|
+| `Oura.fire(options)` | Modal dialog |
+| `Oura.confirm(title, text?)` | Confirm dialog |
+| `Oura.prompt(options)` | Input prompt |
+| `Oura.drawer(options)` | Side panel |
+
+### Components
+
+| Method | Returns | Description |
+|---|---|---|
+| `Oura.tooltip(target, opts)` | `cleanup()` | Tooltip |
+| `Oura.popover(target, opts)` | `cleanup()` | Popover |
+| `Oura.dropdown(target, opts)` | `cleanup()` | Dropdown menu |
+| `Oura.contextMenu(target, items)` | `cleanup()` | Right-click menu |
+| `Oura.hoverCard(target, opts)` | `cleanup()` | Hover preview card |
+| `Oura.alert(opts)` | `HTMLElement` | Inline banner |
+| `Oura.skeleton(opts)` | `HTMLElement` | Loading placeholder |
 
 ---
 
-## 🎨 Layout Options
+## 📄 License
 
-Oura supports several layout variants:
-
-- **Modals**: Centered overlays for critical actions.
-- **Toasts**: Non-blocking notifications that stack (top or bottom).
-- **Drawers**: Side panels that slide in from any edge (`left`, `right`, `top`, `bottom`).
-- **Progress**: Toasts with a visual timer progress bar.
-
----
-
-## 📜 License
-
-Oura JS is open-source software licensed under the [MIT License](LICENSE).
-
----
-
-Developed with ❤️ by [Mark Serna](https://github.com/MarkSerna) and the Oura Team.
+MIT © [Oura Open Source](https://github.com/MarkSerna/ourajs)

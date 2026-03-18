@@ -17,11 +17,28 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Components',
+        text: 'Overlays',
         items: [
           { text: 'Modals', link: '/guide/modals' },
           { text: 'Toasts', link: '/guide/toasts' },
           { text: 'Drawers', link: '/guide/drawers' },
+          { text: 'Popovers', link: '/guide/popovers' },
+          { text: 'Tooltips', link: '/guide/tooltips' },
+          { text: 'Hover Cards', link: '/guide/hover-cards' },
+        ]
+      },
+      {
+        text: 'Menus',
+        items: [
+          { text: 'Dropdown Menus', link: '/guide/dropdowns' },
+          { text: 'Context Menus', link: '/guide/context-menus' },
+        ]
+      },
+      {
+        text: 'Feedback',
+        items: [
+          { text: 'Inline Alerts', link: '/guide/alerts' },
+          { text: 'Skeletons', link: '/guide/skeletons' },
         ]
       },
       {
