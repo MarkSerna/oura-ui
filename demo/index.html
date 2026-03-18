@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <style>
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: 
+            background:
                 radial-gradient(circle at 10% 20%, #eff6ff, transparent 40%),
                 radial-gradient(circle at 90% 80%, #f5f3ff, transparent 40%),
                 radial-gradient(circle at 40% 60%, #e0f2fe, transparent 50%),
@@ -30,42 +31,52 @@
         }
 
         /* Custom Glassmorphism Dropdown */
-        .custom-select-wrapper { position: relative; user-select: none; }
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+        }
+
         .custom-select-trigger {
-            padding: 10px 18px; 
-            border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.8); 
-            background: rgba(255,255,255,0.6); 
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             font-size: 0.95rem;
-            font-weight: 600; 
-            cursor: pointer; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 8px;
         }
+
         .custom-select-trigger:hover {
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             transform: translateY(-2px);
         }
+
         .custom-options {
             position: absolute;
             top: 115%;
             right: 0;
-            background: rgba(255,255,255,0.85);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.8);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             display: none;
             flex-direction: column;
             min-width: 140px;
         }
-        .custom-select-wrapper.open .custom-options { display: flex; }
+
+        .custom-select-wrapper.open .custom-options {
+            display: flex;
+        }
+
         .custom-option {
             padding: 10px 18px;
             cursor: pointer;
@@ -75,8 +86,15 @@
             font-weight: 500;
             transition: background 0.2s;
         }
-        .custom-option:hover { background: rgba(59, 130, 246, 0.1); }
-        .custom-option img { width: 20px; border-radius: 3px; }
+
+        .custom-option:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .custom-option img {
+            width: 20px;
+            border-radius: 3px;
+        }
 
         .app-layout {
             display: grid;
@@ -87,7 +105,7 @@
         .sidebar {
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(30px);
-            border-right: 1px solid rgba(255,255,255,0.5);
+            border-right: 1px solid rgba(255, 255, 255, 0.5);
             padding: 40px;
             overflow-y: auto;
             position: sticky;
@@ -112,8 +130,10 @@
             align-items: center;
             gap: 12px;
         }
+
         .logo-icon {
-            width: 40px; height: 40px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
@@ -134,7 +154,7 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
         }
 
         .grid-controls {
@@ -144,8 +164,8 @@
         }
 
         .btn {
-            background: rgba(255,255,255,0.6);
-            border: 1px solid rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             padding: 12px;
             border-radius: 14px;
             cursor: pointer;
@@ -157,14 +177,24 @@
             color: #334155;
             font-size: 0.85rem;
         }
+
         .btn:hover {
             background: white;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         }
-        .btn svg { width: 18px; height: 18px; opacity: 0.7; }
-        
-        .btn-active { background: #3b82f6 !important; color: white !important; border-color: #2563eb !important; }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        .btn-active {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #2563eb !important;
+        }
 
         .mockup-code {
             background: #1e293b;
@@ -174,7 +204,7 @@
             font-family: 'Fira Code', 'Courier New', monospace;
             font-size: 0.85rem;
             line-height: 1.6;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
         }
 
         #pos-grid {
@@ -183,23 +213,34 @@
             gap: 10px;
             margin-top: 20px;
         }
+
         .pos-btn {
             aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.7rem;
-            border: 2px dashed rgba(0,0,0,0.1);
+            border: 2px dashed rgba(0, 0, 0, 0.1);
             background: transparent;
             cursor: pointer;
             border-radius: 10px;
             transition: all 0.2s;
         }
-        .pos-btn:hover { border-color: #3b82f6; color: #3b82f6; }
-        .pos-btn.active { background: rgba(59, 130, 246, 0.1); border-color: #3b82f6; color: #3b82f6; font-weight: bold; }
 
+        .pos-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .pos-btn.active {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="top-bar">
@@ -208,14 +249,28 @@
                 <img src="https://flagcdn.com/w20/gb.png" alt="English"> English
             </div>
             <div class="custom-options" id="lang-options">
-                <div class="custom-option" data-value="en"><img src="https://flagcdn.com/w20/gb.png" alt="English"> English</div>
-                <div class="custom-option" data-value="es"><img src="https://flagcdn.com/w20/es.png" alt="Español"> Español</div>
-                <div class="custom-option" data-value="fr"><img src="https://flagcdn.com/w20/fr.png" alt="Français"> Français</div>
-                <div class="custom-option" data-value="sa"><img src="https://flagcdn.com/w20/sa.png" alt="العربية"> العربية</div>
+                <div class="custom-option" data-value="en"><img src="https://flagcdn.com/w20/gb.png" alt="English">
+                    English</div>
+                <div class="custom-option" data-value="es"><img src="https://flagcdn.com/w20/es.png" alt="Español">
+                    Español</div>
+                <div class="custom-option" data-value="fr"><img src="https://flagcdn.com/w20/fr.png" alt="Français">
+                    Français</div>
+                <div class="custom-option" data-value="sa"><img src="https://flagcdn.com/w20/sa.png" alt="العربية">
+                    العربية</div>
             </div>
         </div>
         <button class="btn" id="theme-toggle" title="Toggle Theme">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
         </button>
     </div>
 
@@ -243,19 +298,29 @@
             <div class="section-title">Next-Gen Components</div>
             <div class="grid-controls">
                 <button class="btn" id="trigger-drawer">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="15" y1="3" x2="15" y2="21"></line>
+                    </svg>
                     <span>Side Sheet</span>
                 </button>
                 <button class="btn" id="trigger-promise">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
                     <span>Promises</span>
                 </button>
                 <button class="btn" id="trigger-async">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
                     <span>Async SWAL</span>
                 </button>
                 <button class="btn" id="trigger-stack">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
                     <span>3D Stack</span>
                 </button>
             </div>
@@ -272,16 +337,16 @@
             <div class="glass-card">
                 <h2 style="margin: 0 0 12px; font-weight: 700;">Live Integration</h2>
                 <div class="mockup-code" id="code-snippet">
-Oura.configure({ 
-  position: 'top-right',
-  theme: 'system' 
-});
+                    Oura.configure({
+                    position: 'top-right',
+                    theme: 'system'
+                    });
 
-Oura.drawer({
-  title: 'Settings',
-  side: 'right',
-  html: '&lt;p&gt;Configure your app data...&lt;/p&gt;'
-});
+                    Oura.drawer({
+                    title: 'Settings',
+                    side: 'right',
+                    html: '&lt;p&gt;Configure your app data...&lt;/p&gt;'
+                    });
                 </div>
             </div>
 
@@ -304,7 +369,7 @@ Oura.drawer({
         // --- UI Logic ---
         const themeBtn = document.getElementById('theme-toggle');
         let currentTheme = 'light-glass';
-        
+
         themeBtn.onclick = () => {
             currentTheme = currentTheme === 'light-glass' ? 'dark-glass' : 'light-glass';
             Oura.configure({ theme: currentTheme });
@@ -347,7 +412,7 @@ Oura.drawer({
                 confirmButtonText: 'Save Settings',
                 width: '450px'
             }).then(r => {
-                if(r.isConfirmed) Oura.success('Settings Saved');
+                if (r.isConfirmed) Oura.success('Settings Saved');
             });
         };
 
@@ -395,10 +460,10 @@ Oura.drawer({
         const langTrigger = document.getElementById('lang-trigger');
         const langWrapper = document.getElementById('lang-wrapper');
         const langOptions = document.querySelectorAll('.custom-option');
-        
+
         langTrigger.onclick = (e) => { e.stopPropagation(); langWrapper.classList.toggle('open'); };
         document.onclick = () => langWrapper.classList.remove('open');
-        
+
         langOptions.forEach(opt => {
             opt.onclick = () => {
                 const val = opt.getAttribute('data-value');
@@ -410,4 +475,5 @@ Oura.drawer({
 
     </script>
 </body>
+
 </html>

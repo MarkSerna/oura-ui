@@ -20,7 +20,16 @@ export default defineConfig({
         text: 'Components',
         items: [
           { text: 'Modals', link: '/guide/modals' },
-          { text: 'Toasts', link: '/guide/toasts' }
+          { text: 'Toasts', link: '/guide/toasts' },
+          { text: 'Drawers', link: '/guide/drawers' },
+        ]
+      },
+      {
+        text: 'Advanced',
+        items: [
+          { text: 'Promises & Async', link: '/guide/promises' },
+          { text: 'Positioning', link: '/guide/positioning' },
+          { text: 'Internationalization', link: '/guide/i18n' },
         ]
       }
     ],
