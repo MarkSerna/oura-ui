@@ -401,7 +401,7 @@ class OuraNotification {
         if (!container) return;
         
         const toasts = Array.from(container.children) as HTMLElement[];
-        // Sonner logic: newest is at index 0 (top visually if flex, or first in DOM)
+        // Stacking logic: newest is at index 0 (top visually if flex, or first in DOM)
         // With column-reverse, physical order is already handled.
         // For 3D deck, we want to scale back those "further" in the list.
         
@@ -409,7 +409,7 @@ class OuraNotification {
             const isBottom = container.className.includes('bottom');
             // If bottom, the first in DOM (index 0) is at the bottom.
             // We want to scale those "underneath".
-            // WithSonner, the latest toast is always at scale 1.
+            // The latest toast is always at scale 1.
             
             const depth = toasts.length - 1 - idx; // Last element has depth 0
             const yOffset = depth * (isBottom ? 14 : -14); 
