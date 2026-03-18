@@ -10,11 +10,6 @@ onMounted(async () => {
 })
 
 // ── Theme ──
-function toggleTheme() {
-  if (!Oura.value) return
-  currentTheme.value = currentTheme.value === 'light-glass' ? 'dark-glass' : 'light-glass'
-  Oura.value.configure({ theme: currentTheme.value })
-}
 function setTheme(t) {
   if (!Oura.value) return
   currentTheme.value = t
@@ -28,25 +23,6 @@ function setPos(pos) {
   activePos.value = pos
   Oura.value.configure({ position: pos })
   Oura.value.toast({ title: 'Position Updated', text: `Aligned to ${pos}`, icon: 'success' })
-}
-
-// ── Language ──
-const langOpen = ref(false)
-const currentLang = ref({ code: 'en', label: 'English', flag: 'gb' })
-const langs = [
-  { code: 'en', label: 'English', flag: 'gb' },
-  { code: 'es', label: 'Español', flag: 'es' },
-  { code: 'fr', label: 'Français', flag: 'fr' },
-  { code: 'de', label: 'Deutsch', flag: 'de' },
-  { code: 'ja', label: '日本語', flag: 'jp' },
-  { code: 'ar', label: 'العربية', flag: 'sa' },
-]
-function selectLang(lang) {
-  if (!Oura.value) return
-  currentLang.value = lang
-  langOpen.value = false
-  Oura.value.configure({ locale: lang.code })
-  Oura.value.toast({ title: 'Language updated', icon: 'success' })
 }
 
 // ── Demos ──
@@ -117,26 +93,7 @@ const positions = [
 </script>
 
 <template>
-  <div class="pg-root" @click="langOpen = false">
-    <!-- TOP BAR -->
-    <div class="pg-top-bar">
-      <div class="pg-lang-wrapper" @click.stop>
-        <div class="pg-lang-trigger" @click="langOpen = !langOpen">
-          <img :src="`https://flagcdn.com/w20/${currentLang.flag}.png`" :alt="currentLang.label">
-          {{ currentLang.label }}
-        </div>
-        <div class="pg-lang-options" v-show="langOpen">
-          <div class="pg-lang-option" v-for="l in langs" :key="l.code" @click="selectLang(l)">
-            <img :src="`https://flagcdn.com/w20/${l.flag}.png`" :alt="l.label">
-            {{ l.label }}
-          </div>
-        </div>
-      </div>
-      <button class="pg-icon-btn" @click="toggleTheme" title="Toggle Theme">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      </button>
-    </div>
-
+  <div class="pg-root">
     <div class="pg-layout">
       <!-- SIDEBAR -->
       <aside class="pg-sidebar">
@@ -229,51 +186,6 @@ Oura.drawer({
   color: #1e293b;
   transition: all 0.5s ease;
 }
-
-.pg-top-bar {
-  position: fixed; top: 24px; right: 24px; z-index: 1000;
-  display: flex; gap: 12px; align-items: center;
-}
-
-.pg-icon-btn {
-  width: 42px; height: 42px; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.8);
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(16px);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s ease; color: #475569;
-}
-.pg-icon-btn:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
-.pg-icon-btn svg { width: 18px; height: 18px; }
-
-/* Lang Dropdown */
-.pg-lang-wrapper { position: relative; user-select: none; }
-.pg-lang-trigger {
-  padding: 10px 18px; border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.8);
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(16px);
-  font-size: 0.95rem; font-weight: 600; cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-  transition: all 0.2s ease;
-  display: flex; align-items: center; gap: 8px;
-}
-.pg-lang-trigger:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
-.pg-lang-trigger img { width: 20px; border-radius: 3px; }
-.pg-lang-options {
-  position: absolute; top: 115%; right: 0;
-  background: rgba(255,255,255,0.85); backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.8); border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-  overflow: hidden; display: flex; flex-direction: column; min-width: 140px;
-}
-.pg-lang-option {
-  padding: 10px 18px; cursor: pointer;
-  display: flex; align-items: center; gap: 8px;
-  font-weight: 500; transition: background 0.2s;
-}
-.pg-lang-option:hover { background: rgba(59,130,246,0.1); }
-.pg-lang-option img { width: 20px; border-radius: 3px; }
 
 /* Layout */
 .pg-layout {
