@@ -83,11 +83,7 @@ export function _buildModal(
     if (options.input) {
       inputEl = document.createElement('input');
       inputEl.type =
-        options.input === 'number'
-          ? 'number'
-          : options.input === 'password'
-            ? 'password'
-            : 'text';
+        options.input === 'number' ? 'number' : options.input === 'password' ? 'password' : 'text';
       inputEl.className = 'oura-input';
       if (options.inputPlaceholder) inputEl.placeholder = options.inputPlaceholder;
       if (options.inputValue) inputEl.value = options.inputValue;
@@ -133,8 +129,7 @@ export function _buildModal(
     const allowOutsideClick = options.allowOutsideClick !== false;
     if (allowOutsideClick) {
       overlay.addEventListener('mousedown', (e) => {
-        if (e.target === overlay)
-          close({ isConfirmed: false, isDismissed: true, isDenied: false });
+        if (e.target === overlay) close({ isConfirmed: false, isDismissed: true, isDenied: false });
       });
     }
 
@@ -272,9 +267,9 @@ export function _buildModal(
   });
 }
 
-export function fire(core: OuraCore, ...args: any[]): Promise<OuraResult> {
+export function fire(core: OuraCore, ...args: unknown[]): Promise<OuraResult> {
   const config = core._parseArgs(args, 'success');
-  return _buildModal(core as any, config, [
+  return _buildModal(core as OuraCore & { activeModals: ModalInstance[] }, config, [
     {
       text: config.confirmButtonText || core.getI18n('continue'),
       value: { isConfirmed: true, isDismissed: false, isDenied: false },
@@ -282,7 +277,7 @@ export function fire(core: OuraCore, ...args: any[]): Promise<OuraResult> {
   ]);
 }
 
-export function confirmModal(core: OuraCore, ...args: any[]): Promise<OuraResult> {
+export function confirmModal(core: OuraCore, ...args: unknown[]): Promise<OuraResult> {
   const config: OuraOptions = {
     title: 'Are you sure?',
     text: 'This action cannot be undone.',
@@ -309,10 +304,15 @@ export function confirmModal(core: OuraCore, ...args: any[]): Promise<OuraResult
     value: { isConfirmed: true, isDismissed: false, isDenied: false },
   });
 
-  return _buildModal(core as any, config, buttons);
+  return _buildModal(core as OuraCore & { activeModals: ModalInstance[] }, config, buttons);
 }
 
-export function promptModal(core: OuraCore, titleOrOptions: string | OuraOptions, text?: string, inputType: OuraOptions['input'] = 'text'): Promise<OuraResult> {
+export function promptModal(
+  core: OuraCore,
+  titleOrOptions: string | OuraOptions,
+  text?: string,
+  inputType: OuraOptions['input'] = 'text'
+): Promise<OuraResult> {
   const config: OuraOptions =
     typeof titleOrOptions === 'string'
       ? { title: titleOrOptions, text, input: inputType }
@@ -338,12 +338,12 @@ export function promptModal(core: OuraCore, titleOrOptions: string | OuraOptions
     value: { isConfirmed: true, isDismissed: false, isDenied: false },
   });
 
-  return _buildModal(core as any, { ...config }, buttons);
+  return _buildModal(core as OuraCore & { activeModals: ModalInstance[] }, { ...config }, buttons);
 }
 
 export function drawerModal(core: OuraCore, options: OuraOptions): Promise<OuraResult> {
   return _buildModal(
-    core as any,
+    core as OuraCore & { activeModals: ModalInstance[] },
     options,
     [
       {

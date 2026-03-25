@@ -1,7 +1,11 @@
 import { HoverCardOptions } from '../types';
 import { OuraCore } from '../core/OuraCore';
 
-export function hoverCard(core: OuraCore, target: string | HTMLElement, options: HoverCardOptions): () => void {
+export function hoverCard(
+  core: OuraCore,
+  target: string | HTMLElement,
+  options: HoverCardOptions
+): () => void {
   if (typeof document === 'undefined') return () => {};
   const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
   if (!el) return () => {};

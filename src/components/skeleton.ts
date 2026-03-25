@@ -1,7 +1,6 @@
 import { SkeletonOptions } from '../types';
-import { OuraCore } from '../core/OuraCore';
 
-export function skeleton(core: OuraCore, options: SkeletonOptions = {}): HTMLElement {
+export function skeleton(options: SkeletonOptions = {}): HTMLElement {
   const count = options.count || 1;
   const wrapper = document.createElement('div');
   wrapper.style.display = 'flex';

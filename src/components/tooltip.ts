@@ -1,7 +1,11 @@
 import { TooltipOptions } from '../types';
 import { OuraCore } from '../core/OuraCore';
 
-export function tooltip(core: OuraCore, target: string | HTMLElement, options: TooltipOptions): () => void {
+export function tooltip(
+  core: OuraCore,
+  target: string | HTMLElement,
+  options: TooltipOptions
+): () => void {
   if (typeof document === 'undefined') return () => {};
   const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
   if (!el) return () => {};
@@ -12,7 +16,7 @@ export function tooltip(core: OuraCore, target: string | HTMLElement, options: T
   tooltipEl.innerHTML = typeof options === 'string' ? options : options.content;
   document.body.appendChild(tooltipEl);
 
-  const placement = typeof options === 'string' ? 'top' : (options.placement || 'top');
+  const placement = typeof options === 'string' ? 'top' : options.placement || 'top';
   const delay = typeof options === 'string' ? 200 : (options.delay ?? 200);
   let timeout: ReturnType<typeof setTimeout>;
 

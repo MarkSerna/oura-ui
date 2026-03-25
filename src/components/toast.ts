@@ -2,7 +2,7 @@ import { OuraOptions, OuraPromiseMessages, OuraToastHandle } from '../types';
 import { ICONS } from '../icons';
 import { OuraCore } from '../core/OuraCore';
 
-export function recalculateToastStack(core: OuraCore) {
+export function recalculateToastStack() {
   if (typeof document === 'undefined') return;
   const container = document.getElementById('oura-toast-container');
   if (!container) return;
@@ -22,7 +22,7 @@ export function recalculateToastStack(core: OuraCore) {
   });
 }
 
-export function toast(core: OuraCore, ...args: any[]): OuraToastHandle {
+export function toast(core: OuraCore, ...args: unknown[]): OuraToastHandle {
   let updateToast: (newOpts: Partial<OuraOptions>) => void = () => {};
   const promise = new Promise<boolean>((resolve) => {
     if (typeof document === 'undefined') return resolve(false);
@@ -46,7 +46,9 @@ export function toast(core: OuraCore, ...args: any[]): OuraToastHandle {
     let actionsHtml = '';
     if (config.actions && config.actions.length > 0) {
       actionsHtml = `<div class="oura-toast-actions">${config.actions
-        .map((a, i) => `<button class="oura-toast-action" data-action-idx="${i}">${a.label}</button>`)
+        .map(
+          (a, i) => `<button class="oura-toast-action" data-action-idx="${i}">${a.label}</button>`
+        )
         .join('')}</div>`;
     }
 
@@ -89,7 +91,7 @@ export function toast(core: OuraCore, ...args: any[]): OuraToastHandle {
     }
 
     container.appendChild(toastEl);
-    recalculateToastStack(core);
+    recalculateToastStack();
 
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     let startTime = Date.now();
@@ -106,7 +108,7 @@ export function toast(core: OuraCore, ...args: any[]): OuraToastHandle {
       toastEl.classList.remove('oura-show');
       setTimeout(() => {
         toastEl.remove();
-        recalculateToastStack(core);
+        recalculateToastStack();
         resolve(true);
       }, 400);
     };
@@ -204,7 +206,6 @@ export function toast(core: OuraCore, ...args: any[]): OuraToastHandle {
 }
 
 export function promiseToast<T>(
-  core: OuraCore,
   promise: Promise<T> | (() => Promise<T>),
   msgs: OuraPromiseMessages<T>
 ): Promise<T> {
@@ -227,7 +228,7 @@ export function promiseToast<T>(
       </div>
     `;
     container.appendChild(toastEl);
-    recalculateToastStack(core);
+    recalculateToastStack();
 
     requestAnimationFrame(() => {
       toastEl.classList.remove('oura-init');
@@ -248,7 +249,7 @@ export function promiseToast<T>(
         toastEl.classList.remove('oura-show');
         setTimeout(() => {
           toastEl.remove();
-          recalculateToastStack(core);
+          recalculateToastStack();
         }, 400);
       }, 3000);
     };

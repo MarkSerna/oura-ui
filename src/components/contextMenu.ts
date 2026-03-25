@@ -1,7 +1,11 @@
 import { DropdownItem } from '../types';
 import { OuraCore } from '../core/OuraCore';
 
-export function contextMenu(core: OuraCore, target: string | HTMLElement, items: DropdownItem[]): () => void {
+export function contextMenu(
+  core: OuraCore,
+  target: string | HTMLElement,
+  items: DropdownItem[]
+): () => void {
   if (typeof document === 'undefined') return () => {};
   const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
   if (!el) return () => {};
@@ -45,9 +49,7 @@ export function contextMenu(core: OuraCore, target: string | HTMLElement, items:
     menu.style.left = `${e.clientX}px`;
     requestAnimationFrame(() => {
       menu.classList.add('oura-show');
-      const firstItem = menu.querySelector<HTMLElement>(
-        '.oura-dropdown-item:not(.oura-disabled)'
-      );
+      const firstItem = menu.querySelector<HTMLElement>('.oura-dropdown-item:not(.oura-disabled)');
       if (firstItem) firstItem.focus();
     });
   };

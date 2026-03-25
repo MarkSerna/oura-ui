@@ -1,7 +1,11 @@
 import { DropdownOptions } from '../types';
 import { OuraCore } from '../core/OuraCore';
 
-export function dropdown(core: OuraCore, target: string | HTMLElement, options: DropdownOptions): () => void {
+export function dropdown(
+  core: OuraCore,
+  target: string | HTMLElement,
+  options: DropdownOptions
+): () => void {
   if (typeof document === 'undefined') return () => {};
   const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
   if (!el) return () => {};

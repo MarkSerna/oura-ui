@@ -14,16 +14,86 @@ export class OuraCore {
 
   public locale: string = 'en';
   public i18n: Record<string, OuraI18nStrings> = {
-    en: { confirm: 'Confirm', cancel: 'Cancel', submit: 'Submit', continue: 'Continue', deny: 'Deny', dismiss: 'Dismiss' },
-    es: { confirm: 'Confirmar', cancel: 'Cancelar', submit: 'Enviar', continue: 'Continuar', deny: 'Denegar', dismiss: 'Cerrar' },
-    fr: { confirm: 'Confirmer', cancel: 'Annuler', submit: 'Soumettre', continue: 'Continuer', deny: 'Refuser', dismiss: 'Fermer' },
-    de: { confirm: 'Bestätigen', cancel: 'Abbrechen', submit: 'Einreichen', continue: 'Weiter', deny: 'Ablehnen', dismiss: 'Schließen' },
-    it: { confirm: 'Conferma', cancel: 'Annulla', submit: 'Invia', continue: 'Continua', deny: 'Rifiuta', dismiss: 'Chiudi' },
-    pt: { confirm: 'Confirmar', cancel: 'Cancelar', submit: 'Enviar', continue: 'Continuar', deny: 'Recusar', dismiss: 'Fechar' },
-    zh: { confirm: '确认', cancel: '取消', submit: '提交', continue: '继续', deny: '拒绝', dismiss: '关闭' },
-    ja: { confirm: '確認', cancel: 'キャンセル', submit: '送信', continue: '続行', deny: '拒否', dismiss: '閉じる' },
-    ru: { confirm: 'Подтвердить', cancel: 'Отмена', submit: 'Отправить', continue: 'Продолжить', deny: 'Отказать', dismiss: 'Закрыть' },
-    ar: { confirm: 'تأكيد', cancel: 'إلغاء', submit: 'إرسال', continue: 'متابعة', deny: 'رفض', dismiss: 'إغلاق' },
+    en: {
+      confirm: 'Confirm',
+      cancel: 'Cancel',
+      submit: 'Submit',
+      continue: 'Continue',
+      deny: 'Deny',
+      dismiss: 'Dismiss',
+    },
+    es: {
+      confirm: 'Confirmar',
+      cancel: 'Cancelar',
+      submit: 'Enviar',
+      continue: 'Continuar',
+      deny: 'Denegar',
+      dismiss: 'Cerrar',
+    },
+    fr: {
+      confirm: 'Confirmer',
+      cancel: 'Annuler',
+      submit: 'Soumettre',
+      continue: 'Continuer',
+      deny: 'Refuser',
+      dismiss: 'Fermer',
+    },
+    de: {
+      confirm: 'Bestätigen',
+      cancel: 'Abbrechen',
+      submit: 'Einreichen',
+      continue: 'Weiter',
+      deny: 'Ablehnen',
+      dismiss: 'Schließen',
+    },
+    it: {
+      confirm: 'Conferma',
+      cancel: 'Annulla',
+      submit: 'Invia',
+      continue: 'Continua',
+      deny: 'Rifiuta',
+      dismiss: 'Chiudi',
+    },
+    pt: {
+      confirm: 'Confirmar',
+      cancel: 'Cancelar',
+      submit: 'Enviar',
+      continue: 'Continuar',
+      deny: 'Recusar',
+      dismiss: 'Fechar',
+    },
+    zh: {
+      confirm: '确认',
+      cancel: '取消',
+      submit: '提交',
+      continue: '继续',
+      deny: '拒绝',
+      dismiss: '关闭',
+    },
+    ja: {
+      confirm: '確認',
+      cancel: 'キャンセル',
+      submit: '送信',
+      continue: '続行',
+      deny: '拒否',
+      dismiss: '閉じる',
+    },
+    ru: {
+      confirm: 'Подтвердить',
+      cancel: 'Отмена',
+      submit: 'Отправить',
+      continue: 'Продолжить',
+      deny: 'Отказать',
+      dismiss: 'Закрыть',
+    },
+    ar: {
+      confirm: 'تأكيد',
+      cancel: 'إلغاء',
+      submit: 'إرسال',
+      continue: 'متابعة',
+      deny: 'رفض',
+      dismiss: 'إغلاق',
+    },
   };
 
   public theme: 'light-glass' | 'dark-glass' | 'system' = 'system';
@@ -32,7 +102,9 @@ export class OuraCore {
   public _getEffectiveTheme(): 'light-glass' | 'dark-glass' {
     if (typeof window === 'undefined') return 'light-glass';
     if (this.theme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark-glass' : 'light-glass';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark-glass'
+        : 'light-glass';
     }
     return this.theme as 'light-glass' | 'dark-glass';
   }
@@ -50,7 +122,12 @@ export class OuraCore {
     const fromEn = this.i18n['en'][key];
     if (fromEn != null && fromEn !== '') return fromEn;
     const fallback: Record<keyof OuraI18nStrings, string> = {
-      confirm: 'Confirm', cancel: 'Cancel', submit: 'Submit', continue: 'Continue', deny: 'Deny', dismiss: 'Dismiss',
+      confirm: 'Confirm',
+      cancel: 'Cancel',
+      submit: 'Submit',
+      continue: 'Continue',
+      deny: 'Deny',
+      dismiss: 'Dismiss',
     };
     return fallback[key];
   }
@@ -161,7 +238,7 @@ export class OuraCore {
     }
   }
 
-  public _parseArgs(args: any[], defaultIcon?: OuraOptions['icon']): OuraOptions {
+  public _parseArgs(args: unknown[], defaultIcon?: OuraOptions['icon']): OuraOptions {
     if (typeof args[0] === 'string' || typeof args[1] === 'string') {
       return {
         title: (args[0] as string) || '',
@@ -169,9 +246,9 @@ export class OuraCore {
         icon: (args[2] as OuraOptions['icon']) || defaultIcon,
       };
     }
-    const opts = args[0];
+    const opts = args[0] as OuraOptions | undefined;
     if (opts && typeof opts === 'object' && !Array.isArray(opts)) {
-      return { icon: defaultIcon, ...(opts as OuraOptions) };
+      return { icon: defaultIcon, ...opts };
     }
     return { icon: defaultIcon };
   }
