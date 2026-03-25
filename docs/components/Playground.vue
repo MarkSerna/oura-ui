@@ -13,7 +13,8 @@ const codeSnippet = ref('');
 const translations = {
   en: {
     hero_title: 'Oura.js Playground',
-    hero_desc: 'An interactive playground for the glassmorphism notification engine. Click any demo to fire it live.',
+    hero_desc:
+      'An interactive playground for the glassmorphism notification engine. Click any demo to fire it live.',
     section_pos: 'Toast Position',
     section_layouts: 'Layouts',
     section_async: 'Async',
@@ -49,11 +50,12 @@ const translations = {
     feature_access_title: 'Accessible',
     feature_access_desc: 'Full WAI-ARIA, Escape key, Focus Trapping & reduced-motion support.',
     toast_pos_updated: 'Position Updated',
-    toast_pos_text: 'Aligned to'
+    toast_pos_text: 'Aligned to',
   },
   es: {
     hero_title: 'Oura.js Playground',
-    hero_desc: 'Un patio de juegos interactivo para el motor de notificaciones glassmorphism. Haz clic en cualquier demo para verla en vivo.',
+    hero_desc:
+      'Un patio de juegos interactivo para el motor de notificaciones glassmorphism. Haz clic en cualquier demo para verla en vivo.',
     section_pos: 'Posición del Toast',
     section_layouts: 'Diseños',
     section_async: 'Asíncrono',
@@ -89,8 +91,8 @@ const translations = {
     feature_access_title: 'Accesible',
     feature_access_desc: 'Soporte completo para WAI-ARIA, tecla Escape y bloqueo de foco.',
     toast_pos_updated: 'Posición Actualizada',
-    toast_pos_text: 'Anclado en'
-  }
+    toast_pos_text: 'Anclado en',
+  },
 };
 
 const currentLang = computed(() => (lang.value.startsWith('es') ? 'es' : 'en'));
@@ -120,20 +122,21 @@ const setPos = (pos) => {
   if (!Oura.value) return;
   activePos.value = pos;
   Oura.value.configure({ position: pos });
-  Oura.value.toast({ 
-    title: t('toast_pos_updated'), 
-    text: `${t('toast_pos_text')} ${pos}`, 
-    icon: 'success' 
+  Oura.value.toast({
+    title: t('toast_pos_updated'),
+    text: `${t('toast_pos_text')} ${pos}`,
+    icon: 'success',
   });
   updateCodeSnippet();
 };
 
 const triggerDrawer = () => {
   if (!Oura.value) return;
-  Oura.value.drawer({
-    title: 'User Preferences',
-    side: 'right',
-    html: `<div style="display:flex;flex-direction:column;gap:20px;">
+  Oura.value
+    .drawer({
+      title: 'User Preferences',
+      side: 'right',
+      html: `<div style="display:flex;flex-direction:column;gap:20px;">
       <p style="color:#64748b">Adjust your application preferences.</p>
       <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
         <input type="checkbox" checked> Enable Notifications
@@ -142,10 +145,11 @@ const triggerDrawer = () => {
         <input type="checkbox"> Beta Features
       </label>
     </div>`,
-    confirmButtonText: 'Save Settings',
-  }).then((r) => {
-    if (r.isConfirmed) Oura.value.success('Settings Saved');
-  });
+      confirmButtonText: 'Save Settings',
+    })
+    .then((r) => {
+      if (r.isConfirmed) Oura.value.success('Settings Saved');
+    });
 };
 
 const triggerConfirm = async () => {
@@ -169,13 +173,13 @@ const triggerStack = () => {
 
 const triggerPromise = () => {
   if (!Oura.value) return;
-  const p = new Promise((res, rej) => 
-    setTimeout(() => Math.random() > 0.3 ? res('Success!') : rej('Failed'), 2000)
+  const p = new Promise((res, rej) =>
+    setTimeout(() => (Math.random() > 0.3 ? res('Success!') : rej('Failed')), 2000)
   );
   Oura.value.promise(p, {
     loading: 'Processing...',
     success: (d) => `Result: ${d}`,
-    error: (e) => `Error: ${e}`
+    error: (e) => `Error: ${e}`,
   });
 };
 
@@ -185,9 +189,9 @@ const triggerAsync = async () => {
     title: 'Authentication',
     text: 'Type "unlock" to proceed',
     preConfirm: async (val) => {
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
       if (val !== 'unlock') throw new Error('Invalid code');
-    }
+    },
   });
 };
 
@@ -198,8 +202,8 @@ const triggerDropdown = (e) => {
       { label: 'Edit Profile', icon: '✏️', onClick: () => Oura.value.info('Edit') },
       { label: 'Settings', icon: '⚙️', onClick: () => Oura.value.info('Settings') },
       { separator: true },
-      { label: 'Logout', icon: '🚪', danger: true, onClick: () => Oura.value.warning('Logout') }
-    ]
+      { label: 'Logout', icon: '🚪', danger: true, onClick: () => Oura.value.warning('Logout') },
+    ],
   });
 };
 
@@ -209,7 +213,7 @@ const triggerAlert = () => {
     title: 'System Notice',
     description: 'New updates are available.',
     variant: 'info',
-    container: '.pg-alerts-area'
+    container: '.pg-alerts-area',
   });
 };
 
@@ -218,7 +222,9 @@ const triggerSkeleton = () => {
   const area = document.querySelector('.pg-skeleton-area');
   area.innerHTML = '';
   Oura.value.skeleton({ variant: 'text', count: 2, container: '.pg-skeleton-area' });
-  setTimeout(() => { area.innerHTML = '<p style="font-size:0.85rem;color:#64748b;">Loaded ✓</p>'; }, 2000);
+  setTimeout(() => {
+    area.innerHTML = '<p style="font-size:0.85rem;color:#64748b;">Loaded ✓</p>';
+  }, 2000);
 };
 
 const positions = [
@@ -244,26 +250,43 @@ const positions = [
 
         <div class="pg-section-title">{{ t('section_pos') }}</div>
         <div class="pg-pos-grid">
-          <button v-for="p in positions" :key="p.key" class="pg-pos-btn"
-            :class="{ active: activePos === p.key }" @click="setPos(p.key)">{{ p.label }}</button>
+          <button
+            v-for="p in positions"
+            :key="p.key"
+            class="pg-pos-btn"
+            :class="{ active: activePos === p.key }"
+            @click="setPos(p.key)"
+          >
+            {{ p.label }}
+          </button>
         </div>
 
         <div class="pg-section-title">{{ t('section_layouts') }}</div>
         <div class="pg-grid-controls">
           <button class="pg-btn" @click="triggerDrawer">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <line x1="15" y1="3" x2="15" y2="21" />
+            </svg>
             <span>{{ t('btn_drawer') }}</span>
           </button>
           <button class="pg-btn" @click="triggerConfirm">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
             <span>{{ t('btn_confirm') }}</span>
           </button>
           <button class="pg-btn" @click="triggerPrompt">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
             <span>{{ t('btn_prompt') }}</span>
           </button>
           <button class="pg-btn" @click="triggerStack">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
             <span>{{ t('btn_stack') }}</span>
           </button>
         </div>
@@ -271,11 +294,17 @@ const positions = [
         <div class="pg-section-title">{{ t('section_async') }}</div>
         <div class="pg-grid-controls">
           <button class="pg-btn" @click="triggerPromise">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
             <span>{{ t('btn_promise') }}</span>
           </button>
           <button class="pg-btn" @click="triggerAsync">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
             <span>{{ t('btn_async') }}</span>
           </button>
         </div>
@@ -323,12 +352,20 @@ const positions = [
               <div class="pg-demo-label">{{ t('demo_info_label') }}</div>
               <div class="pg-demo-sub">Oura.info()</div>
             </div>
-            <div class="pg-demo-card" @click="Oura.toast({ title: 'Uploading', type: 'progress', timer: 3000, icon: 'progress' })">
+            <div
+              class="pg-demo-card"
+              @click="
+                Oura.toast({ title: 'Uploading', type: 'progress', timer: 3000, icon: 'progress' })
+              "
+            >
               <div class="pg-demo-icon">⏳</div>
               <div class="pg-demo-label">{{ t('demo_progress_label') }}</div>
               <div class="pg-demo-sub">type: 'progress'</div>
             </div>
-            <div class="pg-demo-card" @click="Oura.fire({ title: 'Custom Fire', text: 'Dynamic Modal', icon: 'info' })">
+            <div
+              class="pg-demo-card"
+              @click="Oura.fire({ title: 'Custom Fire', text: 'Dynamic Modal', icon: 'info' })"
+            >
               <div class="pg-demo-icon">🔥</div>
               <div class="pg-demo-label">{{ t('demo_modal_label') }}</div>
               <div class="pg-demo-sub">Oura.fire()</div>
@@ -377,8 +414,9 @@ const positions = [
 <style scoped>
 .pg-root {
   font-family: 'Inter', system-ui, sans-serif;
-  background: radial-gradient(circle at 10% 20%, #eff6ff, transparent 40%),
-              radial-gradient(circle at 90% 80%, #f5f3ff, transparent 40%), #f8fafc;
+  background:
+    radial-gradient(circle at 10% 20%, #eff6ff, transparent 40%),
+    radial-gradient(circle at 90% 80%, #f5f3ff, transparent 40%), #f8fafc;
   min-height: 100vh;
   color: #1e293b;
 }
@@ -393,7 +431,7 @@ const positions = [
 .pg-sidebar {
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(0,0,0,0.05);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
   padding: 30px;
   position: sticky;
   top: 0;
@@ -437,7 +475,7 @@ const positions = [
 
 .pg-btn {
   background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
@@ -453,9 +491,13 @@ const positions = [
 .pg-btn:hover {
   background: white;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-.pg-btn svg { width: 14px; height: 14px; opacity: 0.7; }
+.pg-btn svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
 
 .pg-pos-grid {
   display: grid;
@@ -482,7 +524,10 @@ const positions = [
   display: flex;
   gap: 6px;
 }
-.pg-theme-strip .pg-btn { flex: 1; justify-content: center; }
+.pg-theme-strip .pg-btn {
+  flex: 1;
+  justify-content: center;
+}
 
 /* Main Content */
 .pg-main {
@@ -492,8 +537,14 @@ const positions = [
   gap: 25px;
 }
 
-.pg-hero h1 { font-size: 2.2rem; margin: 0; }
-.pg-hero p { color: #64748b; margin-top: 5px; }
+.pg-hero h1 {
+  font-size: 2.2rem;
+  margin: 0;
+}
+.pg-hero p {
+  color: #64748b;
+  margin-top: 5px;
+}
 
 .pg-glass-card {
   background: rgba(255, 255, 255, 0.6);
@@ -501,9 +552,13 @@ const positions = [
   border-radius: 16px;
   padding: 24px;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
 }
-.pg-card-title { font-size: 0.9rem; margin-top: 0; margin-bottom: 20px; }
+.pg-card-title {
+  font-size: 0.9rem;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
 
 .pg-code {
   background: #1e293b;
@@ -528,10 +583,23 @@ const positions = [
   cursor: pointer;
   transition: all 0.2s;
 }
-.pg-demo-card:hover { transform: translateY(-3px); background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-.pg-demo-icon { font-size: 1.5rem; margin-bottom: 8px; }
-.pg-demo-label { font-weight: 700; font-size: 0.85rem; }
-.pg-demo-sub { font-size: 0.7rem; color: #94a3b8; }
+.pg-demo-card:hover {
+  transform: translateY(-3px);
+  background: white;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+.pg-demo-icon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+.pg-demo-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.pg-demo-sub {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
 
 .pg-features-grid {
   display: grid;
@@ -545,7 +613,16 @@ const positions = [
   padding: 15px;
   border-radius: 12px;
 }
-.pg-feature-emoji { font-size: 1.2rem; }
-.pg-feature-title { font-weight: 700; font-size: 0.8rem; }
-.pg-feature-desc { font-size: 0.75rem; color: #64748b; line-height: 1.4; }
+.pg-feature-emoji {
+  font-size: 1.2rem;
+}
+.pg-feature-title {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.pg-feature-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+}
 </style>
