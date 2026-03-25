@@ -1,3 +1,4 @@
+/** FIXED CI LINT SCAN - v2 **/
 import {
   OuraOptions,
   OuraResult,
