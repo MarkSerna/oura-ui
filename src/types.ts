@@ -7,7 +7,7 @@ export interface OuraOptions {
   cancelButtonText?: string;
   showDenyButton?: boolean;
   denyButtonText?: string;
-  preConfirm?: (inputValue?: string | string[] | boolean) => Promise<unknown> | unknown;
+  preConfirm?: (inputValue?: string | string[] | boolean | number) => Promise<unknown> | unknown;
   allowOutsideClick?: boolean;
   timer?: number;
   type?: 'toast' | 'progress';
@@ -74,7 +74,7 @@ export interface OuraResult {
   isConfirmed: boolean;
   isDismissed: boolean;
   isDenied: boolean;
-  value?: any;
+  value?: string | string[] | number | boolean;
 }
 
 export interface ButtonConfig {

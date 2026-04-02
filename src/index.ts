@@ -356,7 +356,8 @@ class OuraNotification {
       }
 
       let inputEl: HTMLInputElement | null = null;
-      let getInputValue = (): any => (inputEl ? inputEl.value : undefined);
+      let getInputValue = (): string | string[] | number | boolean | undefined =>
+        inputEl ? inputEl.value : undefined;
 
       if (options.input === 'select') {
         const selectEl = document.createElement('select');
