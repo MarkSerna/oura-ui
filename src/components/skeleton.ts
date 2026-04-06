@@ -1,11 +1,13 @@
 import { SkeletonOptions } from '../types';
+import { OuraCore } from '../core/OuraCore';
 
-export function skeleton(options: SkeletonOptions = {}): HTMLElement {
+export function skeleton(core: OuraCore, options: SkeletonOptions = {}): HTMLElement {
   const count = options.count || 1;
   const wrapper = document.createElement('div');
   wrapper.style.display = 'flex';
   wrapper.style.flexDirection = 'column';
   wrapper.style.gap = '12px';
+  core._applyThemeToElement(wrapper);
 
   for (let i = 0; i < count; i++) {
     const el = document.createElement('div');

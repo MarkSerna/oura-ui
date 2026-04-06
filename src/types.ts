@@ -20,7 +20,7 @@ export interface OuraOptions {
   // Prompt specific
   input?: 'text' | 'password' | 'email' | 'number' | 'range' | 'select' | 'radio' | 'checkbox';
   inputPlaceholder?: string;
-  inputValue?: string | string[] | boolean;
+  inputValue?: string | string[] | boolean | number;
   inputOptions?: Record<string, string> | string[];
   inputAttributes?: Record<string, string>;
 

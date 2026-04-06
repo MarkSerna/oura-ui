@@ -69,7 +69,7 @@ describe('OuraNotification UI Tests', () => {
     let validated = false;
     const promise = Oura.fire({
       title: 'Async',
-      preConfirm: async (val: string | undefined) => {
+      preConfirm: async (val: string | string[] | number | boolean | undefined) => {
         await new Promise((r) => setTimeout(r, 10));
         validated = true;
         return val;
@@ -355,5 +355,217 @@ describe('OuraNotification UI Tests', () => {
     expect(document.querySelector('.oura-tooltip')?.classList.contains('oura-show')).toBe(true);
     cleanup();
     vi.useRealTimers();
+  });
+
+  it('should render imageUrl, imageWidth and imageAlt in modals', async () => {
+    Oura.fire({
+      title: 'Img',
+      imageUrl: 'https://example.com/t.png',
+      imageWidth: '100px',
+      imageAlt: 'test alt',
+    });
+    const img = document.querySelector('.oura-image') as HTMLImageElement;
+    expect(img).toBeTruthy();
+    expect(img.src).toBe('https://example.com/t.png');
+    expect(img.style.width).toBe('100px');
+    expect(img.alt).toBe('test alt');
+  });
+
+  it('should render footer in modals (string and HTMLElement)', async () => {
+    // String
+    Oura.fire({ title: 'F1', footer: '<span id="f-str">Foot</span>' });
+    expect(document.querySelector('#f-str')).toBeTruthy();
+    document.querySelector('.oura-overlay')?.remove();
+
+    // HTMLElement
+    const el = document.createElement('div');
+    el.id = 'f-el';
+    Oura.fire({ title: 'F2', footer: el });
+    expect(document.querySelector('#f-el')).toBeTruthy();
+  });
+
+  it('should handle prompt with select input', async () => {
+    const promise = Oura.prompt({
+      title: 'Pick',
+      input: 'select',
+      inputOptions: { a: 'Apple', b: 'Banana' },
+    });
+    const select = document.querySelector('.oura-select') as HTMLSelectElement;
+    expect(select).toBeTruthy();
+    expect(select.options.length).toBe(2);
+
+    select.value = 'b';
+    (document.querySelector('.oura-btn:not(.oura-btn-cancel)') as HTMLButtonElement).click();
+
+    const result = await promise;
+    expect(result.value).toBe('b');
+  });
+
+  it('should handle prompt with radio input', async () => {
+    const promise = Oura.prompt({
+      title: 'Radio',
+      input: 'radio',
+      inputOptions: ['One', 'Two'],
+    });
+    const radios = document.querySelectorAll('.oura-choice-input') as NodeListOf<HTMLInputElement>;
+    expect(radios.length).toBe(2);
+
+    radios[1].checked = true;
+    (document.querySelector('.oura-btn:not(.oura-btn-cancel)') as HTMLButtonElement).click();
+
+    const result = await promise;
+    expect(result.value).toBe('Two');
+  });
+
+  it('should handle prompt with checkbox input (returning array)', async () => {
+    const promise = Oura.prompt({
+      title: 'Check',
+      input: 'checkbox',
+      inputOptions: { x: 'X', y: 'Y', z: 'Z' },
+    });
+    const checks = document.querySelectorAll('.oura-choice-input') as NodeListOf<HTMLInputElement>;
+    expect(checks.length).toBe(3);
+
+    checks[0].checked = true;
+    checks[2].checked = true;
+    (document.querySelector('.oura-btn:not(.oura-btn-cancel)') as HTMLButtonElement).click();
+
+    const result = await promise;
+    expect(Array.isArray(result.value)).toBe(true);
+    expect(result.value).toContain('x');
+    expect(result.value).toContain('z');
+    expect(result.value).not.toContain('y');
+  });
+
+  it('should handle prompt with range input', async () => {
+    const promise = Oura.prompt({
+      title: 'Range',
+      input: 'range',
+      inputAttributes: { min: '0', max: '200' },
+      inputValue: 150,
+    });
+    const range = document.querySelector('.oura-range-input') as HTMLInputElement;
+    expect(range).toBeTruthy();
+    expect(range.value).toBe('150');
+
+    range.value = '180';
+    range.dispatchEvent(new Event('input'));
+    expect(document.querySelector('.oura-range-value')?.textContent).toBe('180');
+
+    (document.querySelector('.oura-btn:not(.oura-btn-cancel)') as HTMLButtonElement).click();
+    const result = await promise;
+    expect(result.value).toBe('180');
+  });
+
+  it('should allow closing modals programmatically via Oura.close()', async () => {
+    const promise = Oura.fire({ title: 'Auto Close' });
+    expect(document.querySelector('.oura-modal')).toBeTruthy();
+
+    Oura.close({ isConfirmed: false, isDismissed: true, isDenied: false });
+    const result = await promise;
+    expect(result.isDismissed).toBe(true);
+    expect(document.querySelector('.oura-modal')).toBeFalsy();
+  });
+
+  it('should chain modals using Oura.queue()', async () => {
+    const queuePromise = Oura.queue([{ title: 'Step 1' }, { title: 'Step 2' }]);
+
+    // Step 1
+    expect(document.querySelector('.oura-title')?.textContent).toBe('Step 1');
+    (document.querySelector('.oura-btn') as HTMLButtonElement).click();
+
+    // Wait for animation and next modal
+    await new Promise((r) => setTimeout(r, 800));
+
+    // Step 2
+    expect(document.querySelector('.oura-title')?.textContent).toBe('Step 2');
+    (document.querySelector('.oura-btn') as HTMLButtonElement).click();
+
+    const results = await queuePromise;
+    expect(results.length).toBe(2);
+    expect(results[0].isConfirmed).toBe(true);
+    expect(results[1].isConfirmed).toBe(true);
+  });
+
+  it('should support shorthand methods: success, info, warning, error', () => {
+    // Success
+    Oura.success('Success Title', 'Success Text');
+    expect(document.querySelector('.oura-toast-title')?.textContent).toBe('Success Title');
+    expect(document.querySelector('.oura-toast-text')?.textContent).toBe('Success Text');
+    document.querySelectorAll('.oura-toast').forEach((t) => t.remove());
+
+    // Info
+    Oura.info('Info Title', 'Info Text');
+    expect(document.querySelector('.oura-toast-title')?.textContent).toBe('Info Title');
+    expect(document.querySelector('.oura-toast-text')?.textContent).toBe('Info Text');
+    document.querySelectorAll('.oura-toast').forEach((t) => t.remove());
+
+    // Warning
+    Oura.warning('Warning Title', 'Warning Text');
+    expect(document.querySelector('.oura-toast-title')?.textContent).toBe('Warning Title');
+    expect(document.querySelector('.oura-toast-text')?.textContent).toBe('Warning Text');
+    document.querySelectorAll('.oura-toast').forEach((t) => t.remove());
+
+    // Error
+    Oura.error('Error Title', 'Error Text');
+    expect(document.querySelector('.oura-toast-title')?.textContent).toBe('Error Title');
+    expect(document.querySelector('.oura-toast-text')?.textContent).toBe('Error Text');
+  });
+
+  it('should update accent color in configuration', () => {
+    Oura.configure({ accent: '#ff0000' });
+    expect(document.documentElement.style.getPropertyValue('--oura-accent')).toBe('#ff0000');
+  });
+
+  it('should handle i18n fallback mechanism', () => {
+    // Set an unknown locale
+    Oura.configure({ locale: 'xx' });
+    // Should fallback to English
+    Oura.fire({ title: 'Fallback Test' });
+    const btn = document.querySelector('.oura-btn') as HTMLElement;
+    expect(btn.textContent).toBe('Continue'); // 'continue' key in en
+  });
+
+  it('should handle custom i18n overrides', () => {
+    Oura.configure({
+      locale: 'custom',
+      customI18n: {
+        custom: {
+          confirm: 'YEP',
+          cancel: 'NOPE',
+          submit: 'GO',
+          continue: 'KEEP GOING',
+          deny: 'REJECT',
+          dismiss: 'BYE',
+        },
+      },
+    });
+    Oura.fire({ title: 'Override' });
+    const btn = document.querySelector('.oura-btn') as HTMLElement;
+    expect(btn.textContent).toBe('KEEP GOING');
+  });
+
+  it('should hide and show validation messages in modals', async () => {
+    Oura.fire({
+      title: 'Validation',
+      preConfirm: () => {
+        throw new Error('Invalid input');
+      },
+    });
+
+    const btn = document.querySelector('.oura-btn') as HTMLElement;
+    btn.click();
+
+    await new Promise((r) => setTimeout(r, 0));
+    const valMsg = document.querySelector('.oura-validation-message');
+    expect(valMsg).toBeTruthy();
+    expect(valMsg?.textContent).toBe('Invalid input');
+    expect(valMsg?.classList.contains('oura-show')).toBe(true);
+
+    // Clicking again should re-trigger animation (it stays visible but we check if it exists)
+    btn.click();
+    expect(document.querySelector('.oura-validation-message')).toBeTruthy();
+
+    Oura.close();
   });
 });
