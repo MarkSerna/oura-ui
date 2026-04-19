@@ -124,5 +124,10 @@ class OuraNotification extends OuraCore {
 }
 
 const Oura = OuraNotification.getInstance();
+
+if (typeof window !== 'undefined') {
+  (window as any).Oura = Oura;
+}
+
 export default Oura;
 export { OuraNotification };
